@@ -6,6 +6,7 @@ public class Student {
 
 private Long id;
 private String name;
+
 private int age;
 
     public Student(Long id, String name, int age) {
