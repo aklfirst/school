@@ -28,13 +28,20 @@ public class StudentController {
     }
 
     @GetMapping("/age/{age}") // GET localhost:8080/student/age/8
-    public Collection<Student> getStudentByAge(@PathVariable int age) {
-        return  studentService.getStudentsByAge(age);
+    public ResponseEntity <Collection<Student>> getStudentByAge(@PathVariable Integer age) {
+        return  ResponseEntity.ok(studentService.getStudentsByAge(age));
+      }
+
+      @GetMapping // GET localhost:8080/student/
+      public Collection<Student> printAllStudents() {
+
+        return studentService.getAllStudents();
       }
 
     @DeleteMapping("{id}") // DELETE localhost:8080/student/8
-    public Student deleteStudent(@PathVariable Long id) {
-        return studentService.deleteStudent(id);
+    public ResponseEntity<Student> deleteStudent(@PathVariable Long id) {
+        studentService.deleteStudent(id);
+        return ResponseEntity.ok().build();
         }
 
     @PutMapping // PUT localhost:8080/student/

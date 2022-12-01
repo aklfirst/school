@@ -1,13 +1,21 @@
 package ru.hogwarts.school.model;
 
+import org.springframework.data.annotation.Id;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.Objects;
 
+@Entity
 public class Student {
+    @javax.persistence.Id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
 
-private Long id;
-private String name;
-
-private int age;
+    private int age;
 
     public Student(Long id, String name, int age) {
         this.id = id;
@@ -15,12 +23,8 @@ private int age;
         this.age = age;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Student() {
 
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -38,6 +42,8 @@ private int age;
     public void setAge(int age) {
         this.age = age;
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -59,5 +65,13 @@ private int age;
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 '}';
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

@@ -29,14 +29,20 @@ public class FacultyController {
         return  ResponseEntity.ok(faculty);
     }
 
+    @GetMapping
+    public Collection<Faculty> printAllFaculties() {
+        return facultyService.getAllFaculties();
+    }
+
     @GetMapping("/color/{color}") // GET localhost:8080/faculty/color/red
     public Collection<Faculty> getFacultyByColor(@PathVariable String color) {
         return  facultyService.getFacultiesByColor(color);
     }
 
     @DeleteMapping("{id}") // DELETE localhost:8080/faculty/2
-    public Faculty deleteFaculty(@PathVariable long id) {
-        return facultyService.deleteFaculty(id);
+    public ResponseEntity<Faculty> deleteFaculty(@PathVariable long id) {
+        facultyService.deleteFaculty(id);
+        return ResponseEntity.ok().build();
         }
 
     @PutMapping // PUT localhost:8080/faculty/
