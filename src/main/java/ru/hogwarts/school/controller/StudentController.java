@@ -1,0 +1,78 @@
+package ru.hogwarts.school.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.service.StudentService;
+
+import java.util.Collection;
+
+@RestController
+@RequestMapping("student")
+
+public class StudentController {
+
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+    @GetMapping("{id}") // GET localhost:8080/student/8
+    public ResponseEntity <Student> getStudentInfo(@PathVariable Long id) {
+        Student student = studentService.findStudentById(id);
+        if (student == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return  ResponseEntity.ok(student);
+    }
+
+    @GetMapping("/age/") // GET localhost:8080/student/age/
+    public ResponseEntity <Collection<Student>> getStudentByAge(@RequestParam Integer age_min,
+                                                                @RequestParam (required = false) Integer age_max) {
+        if (age_max == null) {
+            return  ResponseEntity.ok(studentService.getStudentsByAge(age_min));
+        }
+        return  ResponseEntity.ok(studentService.getStudentsByAgeInRange(age_min,age_max));
+      }
+
+
+    @GetMapping("/faculty/{id}/") // GET localhost:8080/student/faculty/2
+    public ResponseEntity getStudentFaculty(@PathVariable Long id) {
+        return  ResponseEntity.ok(studentService.findStudentFaculty(id));
+    }
+
+    @GetMapping // GET localhost:8080/student/
+    public Collection<Student> printAllStudents() {
+
+        return studentService.getAllStudents();
+    }
+
+    @DeleteMapping("{id}") // DELETE localhost:8080/student/8
+    public ResponseEntity<Student> deleteStudent(@PathVariable Long id) {
+        studentService.deleteStudent(id);
+        return ResponseEntity.ok().build();
+        }
+
+    @PutMapping // PUT localhost:8080/student/
+    public ResponseEntity <Student> editStudent (@RequestBody Student student) {
+        Student studentToEdit = studentService.editStudent(student);
+        if (studentToEdit == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return  ResponseEntity.ok(studentToEdit);
+    }
+
+
+    @PostMapping // POST localhost:8080/student/
+    public ResponseEntity <Student> createStudentList(@RequestBody Student student) {
+        Student studentToCreate = studentService.createStudent(student);
+        if (studentToCreate == null) {
+            return ResponseEntity.internalServerError().build();
+        }
+        return ResponseEntity.ok(studentToCreate);
+    }
+
+
+}
