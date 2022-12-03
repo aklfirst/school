@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.OneToMany;
+import java.util.Collection;
 import java.util.Objects;
 @Entity
 
@@ -17,6 +19,9 @@ public class Faculty {
     private String name;
     private String color;
 
+    @OneToMany(mappedBy = "faculty")
+    private Collection<Student> students;
+
     public Faculty(Long id, String name, String color) {
         this.id = id;
         this.name = name;
@@ -26,6 +31,8 @@ public class Faculty {
     public Faculty() {
 
     }
+
+
 
     public String getName() {
         return name;

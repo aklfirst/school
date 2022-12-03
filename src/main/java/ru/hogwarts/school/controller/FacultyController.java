@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
@@ -24,7 +25,7 @@ public class FacultyController {
     public ResponseEntity<Faculty> getFacultyInfo(@PathVariable Long id) {
         Faculty faculty = facultyService.findFacultyById(id);
         if (faculty == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return  ResponseEntity.ok(faculty);
     }
@@ -34,9 +35,14 @@ public class FacultyController {
         return facultyService.getAllFaculties();
     }
 
-    @GetMapping("/color/{color}") // GET localhost:8080/faculty/color/red
-    public Collection<Faculty> getFacultyByColor(@PathVariable String color) {
-        return  facultyService.getFacultiesByColor(color);
+    @GetMapping("/color") // GET localhost:8080/faculty/color/
+    public ResponseEntity<Collection<Faculty>> findFacultyByColor(@RequestParam String partColor) {
+        return ResponseEntity.ok(facultyService.getFacultiesByColor(partColor));
+    }
+
+    @GetMapping("/students") // GET localhost:8080/faculty/color/
+    public ResponseEntity<Collection<Student>> getStudentsByFaculty(@RequestParam long id) {
+        return ResponseEntity.ok(facultyService.findStudentsByFaculty(id));
     }
 
     @DeleteMapping("{id}") // DELETE localhost:8080/faculty/2
@@ -49,17 +55,17 @@ public class FacultyController {
     public ResponseEntity <Faculty> editFaculty (@RequestBody Faculty faculty) {
         Faculty facultyToEdit = facultyService.editFaculty(faculty);
         if (facultyToEdit == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         return  ResponseEntity.ok(facultyToEdit);
     }
 
 
     @PostMapping // POST localhost:8080/faculty/
-    public ResponseEntity <Faculty> createStudentList(@RequestBody Faculty faculty) {
+    public ResponseEntity <Faculty> createFacultyList(@RequestBody Faculty faculty) {
         Faculty facultyToCreate = facultyService.createFaculty(faculty);
         if (facultyToCreate == null) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(facultyToCreate);
     }

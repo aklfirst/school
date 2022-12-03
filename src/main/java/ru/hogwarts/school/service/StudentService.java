@@ -1,15 +1,10 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.StudentRepository;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 
@@ -44,14 +39,16 @@ public class StudentService {
         return studentRepository.findByAge(age);
     }
 
-   // public Collection<Student> checkDuplicate (Student student) {
-   //       return students.entrySet().stream()
-   //           .filter(e -> e.getValue().getName().equals(student.getName()))
-   //         .filter(e -> e.getValue().getAge() == student.getAge())
-   //       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())).values();
-   //}
+    public Collection<Student> getStudentsByAgeInRange(int age_min, int age_max) {
+        return studentRepository.findByAgeBetween(age_min,age_max);
+    }
 
     public Collection<Student> getAllStudents() {
         return studentRepository.findAll();
     }
+
+    public String findStudentFaculty(Long id) {
+        Student student = findStudentById(id);
+        return student.getName() +": " + student.getFaculty();
+        }
 }
