@@ -10,9 +10,6 @@ import java.util.Collection;
 
 public class StudentService {
 
-    //private final HashMap<Long, Student> students = new HashMap<>();
-
-    //private long lastId = 0;
     private final StudentRepository studentRepository;
 
     public StudentService(StudentRepository studentRepository) {
@@ -39,8 +36,8 @@ public class StudentService {
         return studentRepository.findByAge(age);
     }
 
-    public Collection<Student> getStudentsByAgeInRange(int age_min, int age_max) {
-        return studentRepository.findByAgeBetween(age_min,age_max);
+    public Collection<Student> getStudentsByAgeInRange(int ageMin, int ageMax) {
+        return studentRepository.findByAgeBetween(ageMin,ageMax);
     }
 
     public Collection<Student> getAllStudents() {

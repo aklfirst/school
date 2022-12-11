@@ -29,12 +29,12 @@ public class StudentController {
     }
 
     @GetMapping("/age/") // GET localhost:8080/student/age/
-    public ResponseEntity <Collection<Student>> getStudentByAge(@RequestParam Integer age_min,
-                                                                @RequestParam (required = false) Integer age_max) {
-        if (age_max == null) {
-            return  ResponseEntity.ok(studentService.getStudentsByAge(age_min));
+    public ResponseEntity <Collection<Student>> getStudentByAge(@RequestParam Integer ageMin,
+                                                                @RequestParam (required = false) Integer ageMax) {
+        if (ageMax == null) {
+            return  ResponseEntity.ok(studentService.getStudentsByAge(ageMin));
         }
-        return  ResponseEntity.ok(studentService.getStudentsByAgeInRange(age_min,age_max));
+        return  ResponseEntity.ok(studentService.getStudentsByAgeInRange(ageMin,ageMax));
       }
 
 
