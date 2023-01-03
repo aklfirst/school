@@ -1,12 +1,44 @@
 package ru.hogwarts.school.model;
 
+import org.springframework.data.annotation.Id;
+
+import javax.persistence.*;
 import java.util.Objects;
 
-public class Student {
+@Entity
+@Table(name = "student")
 
-private Long id;
-private String name;
-private int age;
+public class Student {
+    @javax.persistence.Id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+
+    private int age;
+
+    @ManyToOne
+    private Faculty faculty;
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+
+    @OneToOne
+    private Avatar avatar;
+
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
 
     public Student(Long id, String name, int age) {
         this.id = id;
@@ -14,12 +46,8 @@ private int age;
         this.age = age;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Student() {
 
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -38,17 +66,12 @@ private int age;
         this.age = age;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Student)) return false;
-        Student student = (Student) o;
-        return getAge() == student.getAge() && Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName());
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getAge());
+    public Long getId() {
+        return id;
     }
 
     @Override
@@ -57,6 +80,7 @@ private int age;
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +
-                '}';
-    }
+                ", faculty=" + faculty;
+                };
+
 }
