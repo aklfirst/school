@@ -1,14 +1,14 @@
 package ru.hogwarts.school.model;
 
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Lob;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "avatar")
 
 public class Avatar {
     @javax.persistence.Id
@@ -23,17 +23,13 @@ public class Avatar {
     @Lob
     private byte[] data;
 
-    @OneToOne
-    private Student student;
-
-    public Avatar(long id, String filePath, long fileSize, String mediaType, byte[] data, Student student) {
+    public Avatar(long id, String filePath, long fileSize, String mediaType, byte[] data) {
         this.id = id;
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.mediaType = mediaType;
         this.data = data;
-        this.student = student;
-    }
+        }
 
     public Avatar() {
 
@@ -79,11 +75,4 @@ public class Avatar {
         this.data = data;
     }
 
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
 }

@@ -35,7 +35,7 @@ public class StudentController {
         if (ageMax == null) {
             return  ResponseEntity.ok(studentService.getStudentsByAge(ageMin));
         }
-        return  ResponseEntity.ok(studentService.getStudentsByAgeInRange(ageMin,ageMax));
+        return  studentService.getStudentsByAgeInRange(ageMin,ageMax);
       }
 
 
@@ -45,8 +45,7 @@ public class StudentController {
     }
 
     @GetMapping // GET localhost:8080/student/
-    public Collection<Student> printAllStudents() {
-
+    public ResponseEntity<Collection<Student>> printAllStudents() {
         return studentService.getAllStudents();
     }
 
@@ -89,5 +88,13 @@ public class StudentController {
     public ResponseEntity<Double> getAverageAgeStudents() {
         return  ResponseEntity.ok(studentService.getAverageAgeStudents());
     }
+
+    @PatchMapping("/{id}/avatar")
+
+    public Student patchStudentAvatar(@PathVariable long id,
+                                      @RequestParam("avatarId") long avatarId) {
+        return studentService.patchStudentAvatar(id,avatarId);
+    }
+
 
 }

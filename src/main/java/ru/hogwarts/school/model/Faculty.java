@@ -2,25 +2,19 @@ package ru.hogwarts.school.model;
 
 import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 @Entity
+@Table(name = "faculty")
 
 public class Faculty {
-
     @javax.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "faculty")
-    private Collection<Student> students;
 
     public Faculty(Long id, String name, String color) {
         this.id = id;
@@ -31,8 +25,6 @@ public class Faculty {
     public Faculty() {
 
     }
-
-
 
     public String getName() {
         return name;
@@ -50,17 +42,12 @@ public class Faculty {
         this.color = color;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Faculty)) return false;
-        Faculty faculty = (Faculty) o;
-        return Objects.equals(getId(), faculty.getId()) && Objects.equals(getName(), faculty.getName()) && Objects.equals(getColor(), faculty.getColor());
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor());
+    public Long getId() {
+        return id;
     }
 
     @Override
@@ -70,14 +57,5 @@ public class Faculty {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
-    }
-
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import liquibase.repackaged.org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.hogwarts.school.exception.AvatarNotFoundException;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.AvatarRepository;
+import ru.hogwarts.school.repositories.StudentRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,7 +21,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Optional;
 
 import static io.swagger.v3.core.util.AnnotationsUtils.getExtensions;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -32,75 +37,53 @@ public class AvatarService {
     @Value("${path.to.avatars.folder}")
     private String avatarsDir;
 
-    private final StudentService studentService;
+    private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
 
     Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
-    public AvatarService(StudentService studentService, AvatarRepository avatarRepository) {
-        this.studentService = studentService;
+    public AvatarService(StudentRepository studentRepository, AvatarRepository avatarRepository) throws IOException {
+        this.studentRepository = studentRepository;
         this.avatarRepository = avatarRepository;
     }
 
-    public void uploadAvatar(Long studentId, MultipartFile avatar) throws IOException {
-        Student student = studentService.findStudentById(studentId);
+    public void uploadAvatar(MultipartFile avatarFile) throws IOException {
+        logger.info("Calling method uploadAvatar");
+        byte[] data = avatarFile.getBytes();
+        Avatar avatar = create(avatarFile.getSize(), avatarFile.getContentType(), data);
 
-        // Add avatar to local directory (C:\avatars\
-
-        Path filePath = Path.of(avatarsDir, student + "." + getExtensions(avatar.getOriginalFilename
-                ()));
-
-        Files.createDirectories(filePath.getParent());
-        Files.deleteIfExists(filePath);
-
-        try (
-                InputStream is = avatar.getInputStream();
-                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
-                BufferedInputStream bis = new BufferedInputStream(is, 1024);
-                BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
-        ) {
-            bis.transferTo(bos);
-        }
-
-        Avatar avatarId = findAvatar(studentId);
-        avatarId.setStudent(student);
-        avatarId.setFilePath(filePath.toString());
-        avatarId.setFileSize(avatar.getSize());
-        avatarId.setMediaType(avatar.getContentType());
-        // Add avatar to database
-        avatarId.setData(generateImagePreview(filePath));
-        avatarRepository.save(avatarId);
+        String extension = Optional.ofNullable(avatarFile.getOriginalFilename())
+                .map(s -> s.substring(avatarFile.getOriginalFilename().lastIndexOf('.')))
+                .orElse("");
+        Path filePath = Paths.get(avatarsDir).resolve(avatar.getId() + extension);
+        Files.write(filePath, data);
+        avatar.setFilePath(filePath.toString());
+        avatarRepository.save(avatar);
     }
 
-    // Create small file from big one
-    private byte[] generateImagePreview(Path filePath) throws IOException {
-        try (InputStream is = Files.newInputStream(filePath);
-             BufferedInputStream bis = new BufferedInputStream(is, 1024);
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            BufferedImage image = ImageIO.read(bis);
-
-            int height = image.getHeight() / (image.getWidth() / 100);
-            BufferedImage preview = new BufferedImage(100, height, image.getType());
-            Graphics2D graphics = preview.createGraphics();
-            graphics.drawImage(image, 0, 0, 100, height, null);
-            graphics.dispose();
-
-            ImageIO.write(preview, getExtensions(filePath.getFileName().toString()), baos);
-            return baos.toByteArray();
-        }
+    private Avatar create (long size, String contentType, byte[] data) {
+        Avatar avatar = new Avatar();
+        avatar.setData(data);
+        avatar.setFileSize(size);
+        avatar.setMediaType(contentType);
+        return avatarRepository.save(avatar);
     }
 
-
-    private String getExtensions(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") + 1);
+    public Pair<String, byte[]> readAvatarFromDb (long id) {
+        logger.debug("Calling method readAvatarFromDb (id={})", id);
+        Avatar avatar = avatarRepository.findById(id).orElseThrow(()-> new AvatarNotFoundException(id));
+        return Pair.of(avatar.getMediaType(),avatar.getData());
     }
 
-    public Avatar findAvatar(Long studentId) {
-        return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
+    public Pair<String, byte[]> readAvatarFromFs (long id) throws IOException {
+        logger.debug("Calling method readAvatarFromFs (id={})", id);
+        Avatar avatar = avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
+        return Pair.of(avatar.getMediaType(),Files.readAllBytes(Paths.get(avatar.getFilePath())));
     }
+
 
     public ResponseEntity<Collection<Avatar>> getAll(Integer pageNumber, Integer pageSize) {
-        logger.info("method to get all avatars was invoked");
+        logger.info("Calling method to get all avatars");
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
         Collection<Avatar> avatarsList = avatarRepository.findAll(pageRequest).getContent();
         if (avatarsList.isEmpty()) {
@@ -109,4 +92,5 @@ public class AvatarService {
         }
         return ResponseEntity.ok(avatarsList);
     }
+
 }

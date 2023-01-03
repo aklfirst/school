@@ -31,7 +31,7 @@ public class FacultyController {
     }
 
     @GetMapping
-    public Collection<Faculty> printAllFaculties() {
+    public ResponseEntity<Collection<Faculty>> printAllFaculties() {
         return facultyService.getAllFaculties();
     }
 

@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 
+import liquibase.repackaged.org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,38 +30,27 @@ public class AvatarController {
         this.avatarService = avatarService;
     }
 
-    @PostMapping(value = "/{studentId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadAvatar (@PathVariable Long studentId, @RequestParam MultipartFile avatar) throws IOException
-    {
-//        if (avatar.getSize()>1024*300) {
-//            return ResponseEntity.badRequest().body("Слишком здоровый файл!");
-//        }
-
-        avatarService.uploadAvatar(studentId,avatar);
+    @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadAvatar(@RequestParam MultipartFile avatarFile) throws IOException {
+        avatarService.uploadAvatar(avatarFile);
         return ResponseEntity.ok().build();
-
     }
 
     @GetMapping(value = "/{studentId}/avatar-from-db")
-    public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long studentId) {
-        Avatar avatar = avatarService.findAvatar(studentId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(avatar.getMediaType()));
-        headers.setContentLength(avatar.getData().length);
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
+    public ResponseEntity<byte[]> downloadAvatarFromDb(@PathVariable Long studentId) {
+        return readAvatar(avatarService.readAvatarFromDb(studentId));
     }
 
     @GetMapping(value = "/{studentId}/avatar-from-file")
-    public void downloadAvatar(@PathVariable Long studentId, HttpServletResponse response) throws IOException{
-        Avatar avatar = avatarService.findAvatar(studentId);
-        Path path = Path.of(avatar.getFilePath());
-        try(InputStream is = Files.newInputStream(path);
-            OutputStream os = response.getOutputStream();) {
-            response.setStatus(200);
-            response.setContentType(avatar.getMediaType());
-            response.setContentLength((int) avatar.getFileSize());
-            is.transferTo(os);
-        }
+    public ResponseEntity<byte[]> downloadAvatarFromFile(@PathVariable Long studentId) throws IOException {
+        return readAvatar(avatarService.readAvatarFromFs(studentId));
+    }
+
+    private ResponseEntity<byte[]> readAvatar(Pair<String,byte[]> pair) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(pair.getLeft()))
+                .contentLength(pair.getRight().length)
+                .body(pair.getRight());
     }
 
     @GetMapping(value = "/all")
