@@ -1,24 +1,26 @@
 package ru.hogwarts.school.model;
 
-import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "student")
+//@Table(name = "student")
 
 public class Student {
-    @javax.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
     private int age;
 
     @ManyToOne
     private Faculty faculty;
+
+    public Student() {
+
+    }
 
     public Faculty getFaculty() {
         return faculty;
@@ -28,9 +30,16 @@ public class Student {
         this.faculty = faculty;
     }
 
-
     @OneToOne
     private Avatar avatar;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Avatar getAvatar() {
         return avatar;
@@ -40,15 +49,6 @@ public class Student {
         this.avatar = avatar;
     }
 
-    public Student(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
-
-    public Student() {
-
-    }
 
     public String getName() {
         return name;
@@ -66,14 +66,6 @@ public class Student {
         this.age = age;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
     @Override
     public String toString() {
         return "Student{" +
@@ -83,4 +75,9 @@ public class Student {
                 ", faculty=" + faculty;
                 };
 
+    public Student(Long id, String name, int age, Faculty faculty, Avatar avatar) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
 }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -11,6 +12,7 @@ import ru.hogwarts.school.repositories.FacultyRepository;
 import ru.hogwarts.school.repositories.StudentRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @Service
 
@@ -18,7 +20,7 @@ public class FacultyService {
     private final FacultyRepository facultyRepository;
     private final StudentRepository studentRepository;
 
-    Logger logger = LoggerFactory.getLogger(FacultyService.class);
+    private final Logger logger = LoggerFactory.getLogger(FacultyService.class);
 
     public FacultyService(FacultyRepository facultyRepository, StudentRepository studentRepository) {
         this.facultyRepository = facultyRepository;
@@ -68,4 +70,13 @@ public class FacultyService {
         logger.debug("Calling method findStudentsByFaculty (facultyId={})",id);
         return studentRepository.findByFacultyId(id);
     }
+
+    public String getFacultiesWithLongestName() {
+        logger.info("Calling method to get faculty with longest name");
+        return facultyRepository.findAll().stream()
+                .max(Comparator.comparingInt(e -> e.getName().length()))
+                .orElseThrow(() -> new FacultyNotFoundException(0))
+                .getName();
+    }
+
 }

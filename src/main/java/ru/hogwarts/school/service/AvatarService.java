@@ -40,7 +40,7 @@ public class AvatarService {
     private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
 
-    Logger logger = LoggerFactory.getLogger(AvatarService.class);
+    private final Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     public AvatarService(StudentRepository studentRepository, AvatarRepository avatarRepository) throws IOException {
         this.studentRepository = studentRepository;

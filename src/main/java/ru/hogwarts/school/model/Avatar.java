@@ -3,25 +3,33 @@ package ru.hogwarts.school.model;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.annotation.Id;
+import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
 
+
 @Entity
-@Table(name = "avatar")
 
 public class Avatar {
-    @javax.persistence.Id
+
+
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String filePath;
     private long fileSize;
     private String mediaType;
 
-    @Lob
     private byte[] data;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Avatar(long id, String filePath, long fileSize, String mediaType, byte[] data) {
         this.id = id;
@@ -29,18 +37,10 @@ public class Avatar {
         this.fileSize = fileSize;
         this.mediaType = mediaType;
         this.data = data;
-        }
+    }
 
     public Avatar() {
 
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getFilePath() {

@@ -14,6 +14,7 @@ import ru.hogwarts.school.repositories.StudentRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 
@@ -23,7 +24,7 @@ public class StudentService {
 
     private final AvatarRepository avatarRepository;
 
-    Logger logger = LoggerFactory.getLogger(StudentService.class);
+    private final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     public StudentService(StudentRepository studentRepository, AvatarRepository avatarRepository) {
         this.studentRepository = studentRepository;
@@ -113,5 +114,24 @@ public class StudentService {
         student.setAvatar(avatar);
         return studentRepository.save(student);
     }
+
+    public List<String> getStudentsByNameStartsWith(String letter) {
+        logger.debug("Calling method to get students by letter (letter = {})", letter);
+        return studentRepository.findAll().stream()
+                .map(user -> user.getName())
+                .filter(s -> s.startsWith(letter))
+                .sorted((s1, s2) -> s1.compareTo(s2))
+                .map(s -> s.toUpperCase())
+                .collect(Collectors.toList());
+    }
+
+    public Double getAverageAgeWithStream() {
+        logger.info("Calling method to get average age of students with stream");
+        return studentRepository.findAll().stream()
+                .mapToDouble(user -> user.getAge())
+                .average()
+                .orElse(Double.NaN);
+    }
+
 
 }

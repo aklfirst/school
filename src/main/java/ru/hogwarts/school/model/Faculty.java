@@ -1,20 +1,26 @@
 package ru.hogwarts.school.model;
 
-import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 @Entity
-@Table(name = "faculty")
+//@Table(name = "faculty")
 
 public class Faculty {
-    @javax.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String color;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Faculty(Long id, String name, String color) {
         this.id = id;
@@ -42,13 +48,6 @@ public class Faculty {
         this.color = color;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public String toString() {

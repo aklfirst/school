@@ -96,5 +96,14 @@ public class StudentController {
         return studentService.patchStudentAvatar(id,avatarId);
     }
 
+    @GetMapping("/average-age-with-stream")
+    public ResponseEntity<Double> getAverageAgeWithStream() {
+        return ResponseEntity.ok(studentService.getAverageAgeWithStream());
+    }
+
+    @GetMapping("/name-starts-with")
+    public ResponseEntity<List<String>> getStudentsByNameStartsWith(@RequestParam String letter) {
+        return ResponseEntity.ok(studentService.getStudentsByNameStartsWith(letter));
+    }
 
 }
