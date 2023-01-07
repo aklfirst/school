@@ -1,18 +1,37 @@
 package ru.hogwarts.school.model;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+//@Table(name = "student")
+
 public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-private Long id;
-private String name;
-private int age;
+    private String name;
 
-    public Student(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
+    private int age;
+
+    @ManyToOne
+    private Faculty faculty;
+
+    public Student() {
+
     }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+    @OneToOne
+    private Avatar avatar;
 
     public Long getId() {
         return id;
@@ -21,6 +40,15 @@ private int age;
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
 
     public String getName() {
         return name;
@@ -39,24 +67,17 @@ private int age;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Student)) return false;
-        Student student = (Student) o;
-        return getAge() == student.getAge() && Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getAge());
-    }
-
-    @Override
     public String toString() {
         return "Student{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +
-                '}';
+                ", faculty=" + faculty;
+                };
+
+    public Student(Long id, String name, int age, Faculty faculty, Avatar avatar) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
     }
 }
