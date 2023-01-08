@@ -133,5 +133,84 @@ public class StudentService {
                 .orElse(Double.NaN);
     }
 
+    //public void printStudentsNonSyncronizedThread(Integer mainThreadQty, Integer secondThreadQty) {
+        //logger.info("Calling method to get list of students in non-syncronized threads");
+        //List<Student> students = studentRepository.findAll();
+        //for (int i = 0; i < mainThreadQty; i++) {
+        //    System.out.println("Student # " + i + " " + students.get(i).getId() + " " + students.get(i).getName());
+        //}
 
+        //new Thread(() -> {
+        //    for (int i = mainThreadQty; i < (mainThreadQty + secondThreadQty); i++) {
+        //        System.out.println("Student # " + i + " " + students.get(i).getId() + " " + students.get(i).getName());
+        //    }
+        //}).start();
+
+        //new Thread(() -> {
+        //    for (int i = (mainThreadQty + secondThreadQty); i < students.size(); i++) {
+        //        System.out.println("Student # " + i + " " + students.get(i).getId() + " " + students.get(i).getName());
+        //    }
+        //}).start();}
+
+    public void printStudentsNonSyncronizedThread() {
+        logger.info("Calling method to get list of students in non-syncronized threads");
+        List<String> studentNames = studentRepository.findAll().stream()
+                .map(Student::getName).toList();
+
+        printNonSyncronized(studentNames.get(0));
+        printNonSyncronized(studentNames.get(1));
+
+        new Thread(() -> {
+            printNonSyncronized(studentNames.get(4));
+            printNonSyncronized(studentNames.get(5));
+        }).start();
+
+        new Thread(() -> {
+            printNonSyncronized(studentNames.get(2));
+            printNonSyncronized(studentNames.get(3));
+            printNonSyncronized(studentNames.get(6));
+            printNonSyncronized(studentNames.get(7));
+            printNonSyncronized(studentNames.get(8));
+            printNonSyncronized(studentNames.get(9));
+        }).start();
+
+    }
+
+    public void printStudentsSyncronizedThread(){
+        logger.info("Calling method to get list of students in Syncronized Threads");
+        List<String> studentNames = studentRepository.findAll().stream()
+                .map(Student::getName).toList();
+
+        printSyncronized(studentNames.get(0));
+        printSyncronized(studentNames.get(1));
+
+        new Thread(() -> {
+            printSyncronized(studentNames.get(2));
+            printSyncronized(studentNames.get(3));
+        }).start();
+
+        new Thread(() -> {
+            printSyncronized(studentNames.get(4));
+            printSyncronized(studentNames.get(5));
+            printSyncronized(studentNames.get(6));
+            printSyncronized(studentNames.get(7));
+            printSyncronized(studentNames.get(8));
+            printSyncronized(studentNames.get(9));
+        }).start();
+
+    }
+
+    private void printNonSyncronized(String studentName) {
+        System.out.println(studentName);
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private synchronized void printSyncronized(String studentName) {
+        System.out.println(studentName);
+
+    }
 }

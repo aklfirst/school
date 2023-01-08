@@ -106,4 +106,15 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudentsByNameStartsWith(letter));
     }
 
+    @GetMapping("/students-nonsync-threads")
+    public void printStudentsNonSyncronizedThread() {
+        studentService.printStudentsNonSyncronizedThread();
+    }
+
+    @GetMapping("/students-sync-threads")
+    public void printStudentsSyncronizedThread() {
+        studentService.printStudentsSyncronizedThread();
+    }
+
+
 }
