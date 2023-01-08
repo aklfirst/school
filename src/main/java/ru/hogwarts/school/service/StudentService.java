@@ -185,13 +185,13 @@ public class StudentService {
         printSyncronized(studentNames.get(1));
 
         new Thread(() -> {
-            printSyncronized(studentNames.get(2));
-            printSyncronized(studentNames.get(3));
+            printSyncronized(studentNames.get(4));
+            printSyncronized(studentNames.get(5));
         }).start();
 
         new Thread(() -> {
-            printSyncronized(studentNames.get(4));
-            printSyncronized(studentNames.get(5));
+            printSyncronized(studentNames.get(2));
+            printSyncronized(studentNames.get(3));
             printSyncronized(studentNames.get(6));
             printSyncronized(studentNames.get(7));
             printSyncronized(studentNames.get(8));
