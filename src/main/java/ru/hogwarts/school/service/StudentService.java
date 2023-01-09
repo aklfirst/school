@@ -31,6 +31,9 @@ public class StudentService {
         this.avatarRepository = avatarRepository;
         }
 
+    public Integer count = 0;
+    public final Object flag = new Object();
+
     public Student createStudent(Student student){
         logger.debug("Calling method createStudent");
         student.setId(null);
@@ -181,21 +184,21 @@ public class StudentService {
         List<String> studentNames = studentRepository.findAll().stream()
                 .map(Student::getName).toList();
 
-        printSyncronized(studentNames.get(0));
-        printSyncronized(studentNames.get(1));
+        printSyncronized(studentNames.get(0) + " Count " + count);
+        printSyncronized(studentNames.get(1)+ " Count " + count);
 
         new Thread(() -> {
-            printSyncronized(studentNames.get(4));
-            printSyncronized(studentNames.get(5));
+            printSyncronized(studentNames.get(4)+ " Count " + count);
+            printSyncronized(studentNames.get(5)+ " Count " + count);
         }).start();
 
         new Thread(() -> {
-            printSyncronized(studentNames.get(2));
-            printSyncronized(studentNames.get(3));
-            printSyncronized(studentNames.get(6));
-            printSyncronized(studentNames.get(7));
-            printSyncronized(studentNames.get(8));
-            printSyncronized(studentNames.get(9));
+            printSyncronized(studentNames.get(2)+ " Count " + count);
+            printSyncronized(studentNames.get(3)+ " Count " + count);
+            printSyncronized(studentNames.get(6)+ " Count " + count);
+            printSyncronized(studentNames.get(7)+ " Count " + count);
+            printSyncronized(studentNames.get(8)+ " Count " + count);
+            printSyncronized(studentNames.get(9)+ " Count " + count);
         }).start();
 
     }
@@ -209,8 +212,9 @@ public class StudentService {
         }
     }
 
-    private synchronized void printSyncronized(String studentName) {
+    private void printSyncronized(String studentName) {
+        synchronized (flag) {
         System.out.println(studentName);
-
+        count++;}
     }
 }
